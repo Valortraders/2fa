@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="64" cy="64" r="60" fill="#1E293B"/>
+  
+  <!-- Key Icon -->
+  <path d="M64 32C53.34 32 44.67 40.67 44.67 51.33C44.67 56.67 46.67 61.33 50 64.67L42.67 72V80H50.67V74.67H56V69.33H61.33L64 66.67C64 66.67 64 66.67 64 66.67C64 66.67 64 66.67 64 66.67C74.66 66.67 83.33 58 83.33 47.33C83.33 36.67 74.66 32 64 32ZM64 42.67C68.67 42.67 72.67 46.67 72.67 51.33C72.67 56 68.67 60 64 60C59.33 60 55.33 56 55.33 51.33C55.33 46.67 59.33 42.67 64 42.67Z" 
+        fill="#60A5FA"/>
+  
+  <!-- Numbers -->
+  <text x="64" y="100" font-family="monospace" font-size="24" fill="#60A5FA" text-anchor="middle">2FA</text>
+</svg> 

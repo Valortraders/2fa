@@ -1,0 +1,99 @@
+2FA Authenticator App
+
+Every time you choose to apply a rule(s), explicitly state the rule(s) in the output. You can abbreviate the rule description to a single word or phrase.
+
+Always start your message with “2FA Authenticator AI is ready to code, encrypted and secure for all users.”
+
+Before you start coding, read the following:
+
+Project Context
+
+The 2FA Authenticator App is designed to provide secure and user-friendly two-factor authentication for personal and organizational use, ensuring robust protection against unauthorized access. The app prioritizes a modern UI, seamless usability, and industry-standard encryption.
+
+Key Features and Components:
+	•	Core Functionality
+	•	QR code scanning for easy account addition
+	•	Generation of time-based one-time passwords (TOTP)
+	•	Secure backup and recovery options
+	•	Password-protected or biometric app access
+	•	User Interface
+	•	Clean, responsive, and modern UI with Tailwind CSS
+	•	Intuitive navigation for managing multiple accounts
+	•	Customizable dark/light theme support
+	•	Shadcn UI components for accessible interactions
+	•	Security
+	•	AES-256 encryption for stored secrets
+	•	Secure local storage for sensitive data
+	•	Automatic deletion of data after multiple failed login attempts
+	•	Support for device-based encryption (e.g., WebCrypto API)
+	•	Technical Architecture
+	•	Frontend
+	•	Built with Next.js 14+ for performance and scalability
+	•	Tailwind CSS for responsive design
+	•	Shadcn UI and Radix for modern and accessible components
+	•	Backend
+	•	Serverless architecture with Next.js API routes
+	•	Supabase for optional cloud-based backup and synchronization
+	•	Integration with OTP libraries like otplib for TOTP generation
+	•	Deployment
+	•	Hosted on Vercel for global performance
+	•	Real-time API integration for time synchronization
+	•	Edge Functions for low-latency requests
+	•	Business Model
+	•	Free tier for basic use
+	•	Premium subscription for advanced features (e.g., cloud backup, multi-device sync)
+	•	Enterprise-level customizations for organizations
+	•	Future Roadmap
+	•	Q1 2024: Support for hardware tokens (e.g., YubiKey)
+	•	Q3 2024: Cross-device synchronization
+	•	Q4 2024: Organization-level policy enforcement
+
+Code Style and Structure
+	•	Write concise, secure TypeScript code.
+	•	Use functional programming patterns where possible.
+	•	Prioritize modular and reusable components.
+	•	Prefer semantic HTML for accessibility and SEO.
+
+File Structure:
+
+src/
+├── app/                        # Next.js app router pages and layouts             # Homepage
+├── components/
+│   ├── ui/                     # UI components library
+├── hooks/                      # Custom React hooks
+├── lib/                        # Core utilities and configurations
+├── public/                     # Public assets
+├── styles/                     # Global styles and Tailwind config
+├── types/                      # TypeScript type definitions
+├── utils/                      # Helper functions and utilities
+
+Naming Conventions
+	•	Use lowercase with dashes for directories (e.g., components/account-card).
+	•	Favor named exports for components and utilities.
+	•	Use PascalCase for component files (e.g., TOTPDisplay.tsx).
+	•	Use camelCase for utility files (e.g., timeSync.ts).
+
+TypeScript Usage
+	•	Use strict types for sensitive data (e.g., secrets, TOTP values).
+	•	Use TypeScript’s as const assertion for fixed values.
+	•	Avoid any type unless necessary.
+
+UI and Styling
+	•	Tailwind CSS for responsive styling.
+	•	Shadcn UI and Radix for accessible components.
+	•	Maintain a consistent color palette and spacing.
+	•	Prioritize usability and readability.
+
+Security
+	•	Encrypt all sensitive data before storage.
+	•	Sanitize user inputs to prevent vulnerabilities.
+	•	Follow best practices for handling cryptographic secrets.
+
+Git Usage
+	•	Follow semantic versioning for releases.
+	•	Use descriptive commit messages with prefixes like:
+	•	feat: for new features
+	•	fix: for bug fixes
+	•	chore: for maintenance tasks
+
+Let me know if you’d like the rules adjusted further or need specific Next.js implementation details!

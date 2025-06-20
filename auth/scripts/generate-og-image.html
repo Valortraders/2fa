@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OG Image Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            font-family: 'Inter', sans-serif;
+        }
+        .og-image {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(33deg, #000000 0%, #1a1a1a 25%, #2d2d2d 50%, #1a1a1a 75%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 25%, rgba(59, 130, 246, 0.4) 0%, transparent 60%),
+                radial-gradient(circle at 85% 75%, rgba(99, 102, 241, 0.4) 0%, transparent 60%),
+                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.3) 0%, transparent 70%),
+                radial-gradient(circle at 30% 80%, rgba(6, 182, 212, 0.3) 0%, transparent 50%);
+        }
+        .saturn-triangles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .saturn-triangle {
+            position: absolute;
+            width: 0;
+            height: 0;
+            backdrop-filter: blur(20px);
+        }
+        .saturn-triangle:nth-child(1) {
+            top: 15%;
+            left: 20%;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 104px solid rgba(255, 255, 255, 0.1);
+            filter: blur(1px);
+            transform: rotate(15deg);
+        }
+        .saturn-triangle:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            border-left: 45px solid transparent;
+            border-right: 45px solid transparent;
+            border-top: 78px solid rgba(255, 255, 255, 0.08);
+            filter: blur(1px);
+            transform: rotate(-30deg);
+        }
+        .saturn-triangle:nth-child(3) {
+            top: 25%;
+            right: 25%;
+            border-left: 35px solid transparent;
+            border-right: 35px solid transparent;
+            border-bottom: 61px solid rgba(255, 255, 255, 0.06);
+            filter: blur(2px);
+            transform: rotate(75deg);
+        }
+        
+        .valor-symbol {
+            width: 100px;
+            height: 86px;
+            color: white;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 30px rgba(59, 130, 246, 0.3));
+            margin-bottom: 40px;
+            z-index: 1;
+        }
+        .title {
+            font-size: 72px;
+            font-weight: 800;
+            color: white;
+            text-align: center;
+            margin: 0 0 20px 0;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+            z-index: 1;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .description {
+            font-size: 32px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.95);
+            text-align: center;
+            margin: 0 0 40px 0;
+            max-width: 800px;
+            line-height: 1.3;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .features {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            z-index: 1;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 18px 28px;
+            border-radius: 50px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            border-radius: 50px;
+        }
+        .feature-icon {
+            font-size: 24px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+        .feature-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .branding {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+            z-index: 1;
+        }
+        .square-image {
+            width: 1200px;
+            height: 1200px;
+            margin-top: 40px;
+        }
+        .liquid-highlight {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center; color: #333; margin-bottom: 20px;">Open Graph Image (1200x630)</h2>
+    <div class="og-image">
+        <div class="bg-pattern"></div>
+        <div class="saturn-triangles">
+            <div class="saturn-triangle"></div>
+            <div class="saturn-triangle"></div>
+            <div class="saturn-triangle"></div>
+        </div>
+        <div class="liquid-highlight"></div>
+        
+        <svg 
+            viewBox="0 0 436.35 377.89" 
+            xmlns="http://www.w3.org/2000/svg"
+            class="valor-symbol"
+        >
+            <g 
+                fill="none" 
+                stroke="currentColor"
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+            >
+                <path 
+                    stroke-width="18"
+                    d="M4.33,2.5L218.17,372.89L432,2.5Z"
+                />
+                <path 
+                    stroke-width="18"
+                    d="M39.33,62.91l145.36-0.72l0.11,252.68L39.33,62.91Z M251.69,62.19L397,62.91l-145.47,252L251.69,62.19z"
+                />
+                <path 
+                    stroke-width="6"
+                    d="M367.61,112.55L367.61,116.55L326.99,116.55L326.99,116.51L329.28,112.55Z
+                       M134.41,131.74L134.38,62.74L94.74,62.74Z
+                       M278.98,192.38L278.98,192.4L277.83,194.37L276.65,196.38L253.58,196.38L253.58,192.38Z"
+                />
+            </g>
+        </svg>
+        
+        <h1 class="title">Valor2FA</h1>
+        <p class="description">Secure Two-Factor Authentication Generator</p>
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">🔒</span>
+                <span class="feature-text">Secure</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🆓</span>
+                <span class="feature-text">Free</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">⚡</span>
+                <span class="feature-text">Fast</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🌐</span>
+                <span class="feature-text">Open Source</span>
+            </div>
+        </div>
+        <div class="branding">2fa.valortraders.com</div>
+    </div>
+
+    <h2 style="text-align: center; color: #333; margin: 40px 0 20px 0;">Square Image (1200x1200)</h2>
+    <div class="og-image square-image">
+        <div class="bg-pattern"></div>
+        <div class="saturn-triangles">
+            <div class="saturn-triangle"></div>
+            <div class="saturn-triangle"></div>
+            <div class="saturn-triangle"></div>
+        </div>
+        <div class="liquid-highlight"></div>
+        
+        <svg 
+            viewBox="0 0 436.35 377.89" 
+            xmlns="http://www.w3.org/2000/svg"
+            class="valor-symbol"
+        >
+            <g 
+                fill="none" 
+                stroke="currentColor"
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+            >
+                <path 
+                    stroke-width="18"
+                    d="M4.33,2.5L218.17,372.89L432,2.5Z"
+                />
+                <path 
+                    stroke-width="18"
+                    d="M39.33,62.91l145.36-0.72l0.11,252.68L39.33,62.91Z M251.69,62.19L397,62.91l-145.47,252L251.69,62.19z"
+                />
+                <path 
+                    stroke-width="6"
+                    d="M367.61,112.55L367.61,116.55L326.99,116.55L326.99,116.51L329.28,112.55Z
+                       M134.41,131.74L134.38,62.74L94.74,62.74Z
+                       M278.98,192.38L278.98,192.4L277.83,194.37L276.65,196.38L253.58,196.38L253.58,192.38Z"
+                />
+            </g>
+        </svg>
+        
+        <h1 class="title">Valor2FA</h1>
+        <p class="description">Secure Two-Factor Authentication Generator</p>
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">🔒</span>
+                <span class="feature-text">Secure</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🆓</span>
+                <span class="feature-text">Free</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">⚡</span>
+                <span class="feature-text">Fast</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🌐</span>
+                <span class="feature-text">Open Source</span>
+            </div>
+        </div>
+        <div class="branding">2fa.valortraders.com</div>
+    </div>
+
+    <div style="text-align: center; margin: 40px 0; color: #666;">
+        <p><strong>Instructions:</strong></p>
+        <p>1. Open this HTML file in your browser</p>
+        <p>2. Take a screenshot of each image (1200x630 and 1200x1200)</p>
+        <p>3. Save them as og-image.png and og-image-square.png in the public folder</p>
+        <p>4. You can also use browser developer tools to set exact viewport dimensions</p>
+        <p><strong>New Features:</strong> Liquid glass aesthetic with floating orbs, shimmer effects, and the Valor symbol!</p>
+    </div>
+</body>
+</html> 

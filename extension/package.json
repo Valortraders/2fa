@@ -1,0 +1,22 @@
+{
+  "name": "valor-2fa-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension for Valor 2FA",
+  "type": "module",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/styles/tailwind.css -o ./src/styles/output.css",
+    "build:js": "esbuild src/popup.js src/totp.js --bundle --outdir=src/dist --format=esm --platform=browser --target=chrome100",
+    "build": "npm run build:css && npm run build:js",
+    "watch:css": "tailwindcss -i ./src/styles/tailwind.css -o ./src/styles/output.css --watch",
+    "watch:js": "esbuild src/popup.js src/totp.js --bundle --outdir=src/dist --format=esm --platform=browser --target=chrome100 --watch",
+    "watch": "npm-run-all --parallel watch:css watch:js"
+  },
+  "dependencies": {
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.11",
+    "npm-run-all": "^4.1.5",
+    "tailwindcss": "^3.4.0"
+  }
+}

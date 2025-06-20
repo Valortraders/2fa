@@ -1,0 +1,46 @@
+# https://2fa.valortraders.com/robots.txt
+# Valortraders 2FA - Robots.txt
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+Allow: /privacy
+Allow: /terms
+
+# Prevent crawling of error pages and non-public routes
+Disallow: /404
+Disallow: /500
+Disallow: /error
+Disallow: /api/
+Disallow: /_next/
+
+# Sitemap location
+Sitemap: https://2fa.valortraders.com/sitemap.xml
+
+# Rate limiting for crawlers
+Crawl-delay: 1
+
+# Specific instructions for major crawlers
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 1
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1 

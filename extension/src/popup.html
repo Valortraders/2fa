@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valortraders 2FA</title>
+  <link href="./styles/output.css" rel="stylesheet">
+</head>
+<body class="w-[400px] h-[500px] bg-background text-foreground overflow-hidden">
+  <div class="p-4 space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <img src="../icons/icon128.png" alt="Valortraders 2FA" class="w-8 h-8">
+        <h1 class="text-lg font-semibold">Valortraders 2FA</h1>
+      </div>
+      <button id="theme-toggle" class="p-2 rounded-md hover:bg-accent">
+        <svg class="w-5 h-5 dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+        <svg class="w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Input Section -->
+    <div class="space-y-4">
+      <div class="space-y-2">
+        <input
+          id="secret-input"
+          type="text"
+          placeholder="Enter your secret key"
+          class="w-full h-12 px-4 rounded-lg bg-white/5 border border-border focus:border-primary focus:ring-1 focus:ring-primary"
+        >
+        <p class="text-xs text-muted-foreground flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Secret keys contain only letters A-Z and numbers 2-7
+        </p>
+      </div>
+
+      <!-- Error Display -->
+      <div id="error-display" class="hidden text-sm text-red-500 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span></span>
+      </div>
+
+      <!-- Code Display -->
+      <div id="code-container" class="hidden">
+        <div class="p-6 rounded-lg bg-white/5 border border-border relative">
+          <!-- Progress bar -->
+          <div class="absolute bottom-0 left-0 h-0.5 bg-primary/50 transition-all duration-1000" style="width: 100%"></div>
+          
+          <!-- Code -->
+          <div class="space-y-4">
+            <p id="code-display" class="text-3xl font-mono font-bold tracking-[0.5em] text-center"></p>
+            <div class="flex items-center justify-between">
+              <p id="time-left" class="text-sm text-muted-foreground"></p>
+              <button id="copy-button" class="text-sm px-3 py-1 rounded hover:bg-accent">
+                Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ad Card -->
+    <a 
+      href="https://valoralgo.com" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      class="block p-4 rounded-lg bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 hover:border-purple-500/40 transition-all"
+    >
+      <div class="flex items-start gap-3">
+        <div class="flex-1 space-y-1">
+          <h3 class="font-medium">ValorAlgo Trading</h3>
+          <p class="text-sm text-muted-foreground">
+            Experience algorithmic trading with advanced strategies and real-time market insights.
+          </p>
+        </div>
+        <svg class="w-5 h-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+      </div>
+    </a>
+
+    <!-- Footer section - Added fixed positioning -->
+    <div class="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t border-border/50">
+      <div class="space-y-2 max-w-screen-xl mx-auto">
+        <!-- Source info and GitHub link -->
+        <div class="flex items-center justify-between text-xs text-muted-foreground">
+          <p>No data stored • Open source</p>
+          <a 
+            href="https://github.com/Valortraders/valor-2fa" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="flex items-center gap-1 hover:text-primary transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.647.35-1.087.636-1.337-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+            </svg>
+            GitHub
+          </a>
+        </div>
+
+        <!-- Web Version and Valortraders links -->
+        <div class="flex items-center justify-center gap-2">
+          <a 
+            href="https://2fa.valortraders.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="text-sm text-muted-foreground hover:text-primary flex items-center gap-1.5 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            Open Web Version
+          </a>
+          <span class="text-sm text-muted-foreground">by</span>
+          <a
+            href="https://valortraders.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm text-muted-foreground hover:text-primary transition-colors"
+          >Valortraders
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add padding to main content to prevent overlap -->
+    <div class="pb-24">
+      <!-- Your existing content here -->
+    </div>
+  </div>
+
+  <script type="module" src="./dist/popup.js"></script>
+</body>
+</html> 
