@@ -1,4 +1,4 @@
-import { generateTOTP, validateSecret } from './totp.js';
+import { parseAuthInput, generateOTP, generateTOTP, validateSecret } from './totp.js';
 
 // DOM Elements
 let secretInput;
@@ -11,25 +11,28 @@ let codeContainer;
 
 // State
 let currentSecret = '';
+let currentConfig = null;
 let updateTimer;
 
-function validateAndCleanSecret(input) {
-  const cleanSecret = input.replace(/\s/g, '').toUpperCase();
-  const base32Regex = /^[A-Z2-7]+=*$/;
-  
-  if (!base32Regex.test(cleanSecret)) {
-    showError('Secret key must only contain letters A-Z and numbers 2-7');
+async function parseInputToConfig(input) {
+  try {
+    const cfg = parseAuthInput(input);
+    if (cfg.type === 'hotp') {
+      const storageKey = `hotp:${cfg.label || ''}:${cfg.issuer || ''}:${cfg.secretHex.slice(0, 16)}`;
+      const stored = await chrome.storage.sync.get(storageKey);
+      if (stored && typeof stored[storageKey] === 'number') {
+        cfg.counter = stored[storageKey];
+      } else {
+        await chrome.storage.sync.set({ [storageKey]: cfg.counter });
+      }
+      cfg._storageKey = storageKey;
+    }
+    hideError();
+    return cfg;
+  } catch (e) {
+    showError(e.message || 'Invalid input');
     return null;
   }
-
-  const validSecret = validateSecret(cleanSecret);
-  if (!validSecret) {
-    showError('Invalid secret key format');
-    return null;
-  }
-
-  hideError();
-  return cleanSecret;
 }
 
 function showError(message) {
@@ -44,37 +47,46 @@ function hideError() {
 
 function updateTimeLeft() {
   const now = Math.floor(Date.now() / 1000);
-  const timeStep = 30;
+  const timeStep = currentConfig && currentConfig.type === 'totp' ? (currentConfig.period || 30) : 30;
   const currentTimeSlot = Math.floor(now / timeStep);
   const nextUpdate = (currentTimeSlot + 1) * timeStep;
   const timeLeft = nextUpdate - now;
   
-  timeLeftDisplay.textContent = `Refreshes in ${timeLeft}s`;
+  if (currentConfig && currentConfig.type === 'hotp') {
+    timeLeftDisplay.textContent = `HOTP • Counter ${currentConfig.counter}`;
+  } else {
+    timeLeftDisplay.textContent = `Refreshes in ${timeLeft}s`;
+  }
   
   // Update progress bar
   const progressBar = document.querySelector('.bg-primary\\/50');
   if (progressBar) {
-    progressBar.style.width = `${(timeLeft / 30) * 100}%`;
+    if (currentConfig && currentConfig.type === 'hotp') {
+      progressBar.style.width = `100%`;
+    } else {
+      progressBar.style.width = `${(timeLeft / timeStep) * 100}%`;
+    }
   }
   
   // Generate new code at the start of each time slot
-  if (now % timeStep === 0) {
+  if (currentConfig && currentConfig.type !== 'hotp' && now % timeStep === 0) {
     generateCode();
   }
 }
 
-function generateCode() {
+async function generateCode() {
   if (!currentSecret) return;
   
-  const cleanSecret = validateAndCleanSecret(currentSecret);
-  if (!cleanSecret) {
+  const cfg = await parseInputToConfig(currentSecret);
+  currentConfig = cfg;
+  if (!cfg) {
     codeDisplay.textContent = '';
     codeContainer.classList.add('hidden');
     return;
   }
 
   try {
-    const code = generateTOTP(cleanSecret);
+    const code = cfg.type === 'totp' ? generateOTP(cfg) : generateOTP(cfg);
     codeDisplay.textContent = code;
     codeContainer.classList.remove('hidden');
     hideError();
@@ -101,6 +113,17 @@ async function handleCopy() {
   
   await navigator.clipboard.writeText(code);
   copyButton.textContent = 'Copied!';
+  if (currentConfig && currentConfig.type === 'hotp') {
+    currentConfig.counter += 1;
+    if (currentConfig._storageKey) {
+      await chrome.storage.sync.set({ [currentConfig._storageKey]: currentConfig.counter });
+    }
+    try {
+      const nextCode = generateOTP(currentConfig);
+      codeDisplay.textContent = nextCode;
+      timeLeftDisplay.textContent = `HOTP • Counter ${currentConfig.counter}`;
+    } catch {}
+  }
   setTimeout(() => {
     copyButton.textContent = 'Copy';
   }, 2000);
