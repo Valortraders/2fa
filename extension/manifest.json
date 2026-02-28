@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Valor2FA",
-  "version": "1.0.0",
-  "description": "A secure & open source 2FA code generator by Valortraders",
+  "version": "1.1.0",
+  "description": "Secure 2FA generator with encrypted on-device vault by Valortraders",
   "icons": {
     "128": "icons/icon128.png"
   },
