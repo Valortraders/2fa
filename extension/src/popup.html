@@ -138,6 +138,22 @@
               Importing replaces your current local vault.
             </p>
           </div>
+
+          <div class="space-y-2 rounded-md border border-border bg-white/5 p-3">
+            <h3 class="text-sm font-medium">Change Vault Password</h3>
+            <p class="text-xs text-muted-foreground">
+              Update the vault passphrase used to decrypt your local encrypted accounts.
+            </p>
+            <form id="change-passphrase-form" class="space-y-2">
+              <input id="current-passphrase-input" type="password" autocomplete="current-password" placeholder="Current passphrase" class="w-full h-10 px-3 rounded-md bg-transparent border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+              <input id="new-passphrase-input" type="password" autocomplete="new-password" placeholder="New passphrase (min 8 chars)" class="w-full h-10 px-3 rounded-md bg-transparent border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+              <input id="confirm-new-passphrase-input" type="password" autocomplete="new-password" placeholder="Confirm new passphrase" class="w-full h-10 px-3 rounded-md bg-transparent border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+              <button type="submit" class="w-full h-10 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">
+                Change password
+              </button>
+            </form>
+            <p id="change-passphrase-error" class="hidden text-xs text-destructive"></p>
+          </div>
         </section>
       </section>
     </main>

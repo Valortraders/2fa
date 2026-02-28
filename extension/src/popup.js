@@ -1,5 +1,11 @@
 import { generateOTP, parseAuthInput } from './totp.js';
-import { createVault, hasVault, persistVault, unlockVault } from './vault.js';
+import {
+  createVault,
+  hasVault,
+  persistVault,
+  rotateVaultPassphrase,
+  unlockVault
+} from './vault.js';
 
 const APP_VIEWS = ['generate', 'saved', 'scan', 'settings'];
 const THEME_STORAGE_KEY = 'theme';
@@ -12,7 +18,9 @@ const state = {
   activeAccountName: '',
   activeAccountId: null,
   vaultSession: null,
-  pendingDeleteAccountId: null
+  pendingDeleteAccountId: null,
+  copiedAccountId: null,
+  copiedUntilMs: 0
 };
 
 const elements = {};
@@ -123,6 +131,21 @@ function setUnlockMessage(message = '', isError = true) {
   elements.unlockError.classList.toggle('text-destructive', isError);
   elements.unlockError.classList.toggle('text-muted-foreground', !isError);
   setVisibility(elements.unlockError, Boolean(message));
+}
+
+function setChangePassphraseError(message = '') {
+  elements.changePassphraseError.textContent = message;
+  setVisibility(elements.changePassphraseError, Boolean(message));
+}
+
+function resetChangePassphraseForm() {
+  if (!elements.changePassphraseForm) {
+    return;
+  }
+  elements.currentPassphraseInput.value = '';
+  elements.newPassphraseInput.value = '';
+  elements.confirmNewPassphraseInput.value = '';
+  setChangePassphraseError('');
 }
 
 function clearActiveCode() {
@@ -236,6 +259,9 @@ function renderSavedAccounts() {
 
       const isActive = account.id === state.activeAccountId;
       const isPendingDelete = state.pendingDeleteAccountId === account.id;
+      const isCopyConfirmed =
+        state.copiedAccountId === account.id &&
+        state.copiedUntilMs > Date.now();
       const deleteAction = isPendingDelete ? 'delete-confirm' : 'delete-arm';
       const deleteButtonClass = isPendingDelete
         ? 'h-8 w-8 rounded-md border border-emerald-500/60 text-emerald-400 hover:bg-emerald-500/10 inline-flex items-center justify-center'
@@ -251,6 +277,7 @@ function renderSavedAccounts() {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8"/>
           </svg>
         `;
+      const copyLabel = isCopyConfirmed ? 'Copied' : 'Copy';
       return `
         <article class="relative rounded-md border ${isActive ? 'border-primary/60' : 'border-border'} bg-white/5 p-3 overflow-hidden">
           <div class="absolute left-0 bottom-0 h-0.5 bg-primary/60" style="width:${progress}%"></div>
@@ -266,7 +293,7 @@ function renderSavedAccounts() {
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H7a2 2 0 01-2-2V7a2 2 0 012-2h7a2 2 0 012 2v1m-5 10h6a2 2 0 002-2v-6a2 2 0 00-2-2h-6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
               </svg>
-              <span data-copy-label>Copy</span>
+              <span data-copy-label>${copyLabel}</span>
             </button>
             <button type="button" data-action="use" data-account-id="${escapeHtml(account.id)}" aria-label="Use account" class="h-8 w-8 rounded-md border border-border hover:bg-accent inline-flex items-center justify-center">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -427,6 +454,10 @@ async function handleSavedListAction(event) {
     if (state.activeAccountId === account.id) {
       clearActiveCode();
     }
+    if (state.copiedAccountId === account.id) {
+      state.copiedAccountId = null;
+      state.copiedUntilMs = 0;
+    }
     state.pendingDeleteAccountId = null;
     await persistVaultSession();
     renderSavedAccounts();
@@ -446,40 +477,17 @@ async function handleSavedListAction(event) {
 
   if (action === 'copy') {
     state.pendingDeleteAccountId = null;
-    const copyLabel = actionButton.querySelector('[data-copy-label]');
-    const originalLabel = copyLabel ? copyLabel.textContent : actionButton.textContent;
     try {
-      if (copyLabel) {
-        copyLabel.textContent = 'Copied';
-      } else {
-        actionButton.textContent = 'Copied';
-      }
-      actionButton.disabled = true;
       await copyCodeToClipboard(account.config, account.id);
+      state.copiedAccountId = account.id;
+      state.copiedUntilMs = Date.now() + 1000;
+      renderSavedAccounts();
       if (state.activeAccountId === account.id) {
         state.activeConfig = { ...account.config };
         renderActiveCodeCard();
       }
-      setTimeout(() => {
-        if (state.currentView === 'saved') {
-          renderSavedAccounts();
-        } else {
-          if (copyLabel) {
-            copyLabel.textContent = originalLabel;
-          } else {
-            actionButton.textContent = originalLabel;
-          }
-          actionButton.disabled = false;
-        }
-      }, 1000);
       setAppStatus('Code copied.');
     } catch (error) {
-      if (copyLabel) {
-        copyLabel.textContent = originalLabel;
-      } else {
-        actionButton.textContent = originalLabel;
-      }
-      actionButton.disabled = false;
       setAppStatus(error?.message || 'Failed to copy code.', true);
     }
   }
@@ -682,6 +690,47 @@ async function handleImportBackup(event) {
   }
 }
 
+async function handleChangePassphraseSubmit(event) {
+  event.preventDefault();
+  if (!state.vaultSession) {
+    return;
+  }
+
+  const currentPassphrase = elements.currentPassphraseInput.value.trim();
+  const nextPassphrase = elements.newPassphraseInput.value.trim();
+  const confirmPassphrase = elements.confirmNewPassphraseInput.value.trim();
+
+  if (!currentPassphrase) {
+    setChangePassphraseError('Enter your current passphrase.');
+    return;
+  }
+  if (!nextPassphrase || nextPassphrase.length < 8) {
+    setChangePassphraseError('New passphrase must contain at least 8 characters.');
+    return;
+  }
+  if (nextPassphrase !== confirmPassphrase) {
+    setChangePassphraseError('New passphrases do not match.');
+    return;
+  }
+  if (currentPassphrase === nextPassphrase) {
+    setChangePassphraseError('New passphrase must be different from current passphrase.');
+    return;
+  }
+
+  setChangePassphraseError('');
+  setButtonBusy(elements.changePassphraseSubmitButton, 'Updating...');
+  try {
+    const nextSession = await rotateVaultPassphrase(currentPassphrase, nextPassphrase);
+    state.vaultSession = nextSession;
+    resetChangePassphraseForm();
+    setAppStatus('Vault password updated.');
+  } catch (error) {
+    setChangePassphraseError(error?.message || 'Failed to update vault password.');
+  } finally {
+    resetButtonBusy(elements.changePassphraseSubmitButton);
+  }
+}
+
 function handleFallbackTextImport() {
   const candidate = extractAuthCandidate(elements.scanFallbackInput.value);
   if (!candidate) {
@@ -713,6 +762,9 @@ function lockVault() {
   stopTicker();
   state.vaultSession = null;
   state.pendingDeleteAccountId = null;
+  state.copiedAccountId = null;
+  state.copiedUntilMs = 0;
+  resetChangePassphraseForm();
   clearActiveCode();
   elements.unlockPassphrase.value = '';
   setUnlockMessage('');
@@ -755,6 +807,7 @@ async function openUnlockedApp(session) {
   state.vaultSession = session;
   hydrateStateFromVault();
   setUnlockMessage('');
+  resetChangePassphraseForm();
   setVisibility(elements.vaultSetup, false);
   setVisibility(elements.vaultUnlock, false);
   setVisibility(elements.appShell, true);
@@ -865,6 +918,12 @@ function wireDomReferences() {
   elements.savedList = byId('saved-list');
   elements.exportBackupButton = byId('export-backup-button');
   elements.importBackupInput = byId('import-backup-input');
+  elements.changePassphraseForm = byId('change-passphrase-form');
+  elements.currentPassphraseInput = byId('current-passphrase-input');
+  elements.newPassphraseInput = byId('new-passphrase-input');
+  elements.confirmNewPassphraseInput = byId('confirm-new-passphrase-input');
+  elements.changePassphraseError = byId('change-passphrase-error');
+  elements.changePassphraseSubmitButton = elements.changePassphraseForm.querySelector('button[type="submit"]');
   elements.viewPanels = {
     generate: byId('view-generate'),
     saved: byId('view-saved'),
@@ -893,6 +952,7 @@ function bindEventListeners() {
   elements.savedList.addEventListener('click', handleSavedListAction);
   elements.exportBackupButton.addEventListener('click', handleExportBackup);
   elements.importBackupInput.addEventListener('change', handleImportBackup);
+  elements.changePassphraseForm.addEventListener('submit', handleChangePassphraseSubmit);
 
   elements.scanButton.addEventListener('click', handleScanFromImage);
   elements.scanFallbackButton.addEventListener('click', handleFallbackTextImport);

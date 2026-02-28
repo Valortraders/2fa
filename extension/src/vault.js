@@ -173,3 +173,33 @@ export async function persistVault(session) {
     }
   });
 }
+
+export async function rotateVaultPassphrase(currentPassphrase, nextPassphrase) {
+  ensureSubtleCrypto();
+  if (!currentPassphrase) {
+    throw new Error('Current passphrase is required.');
+  }
+  if (!nextPassphrase || nextPassphrase.length < 8) {
+    throw new Error('New passphrase must contain at least 8 characters.');
+  }
+
+  const unlockedSession = await unlockVault(currentPassphrase);
+  const nextSalt = crypto.getRandomValues(new Uint8Array(16));
+  const nextKey = await deriveAesKey(nextPassphrase, nextSalt);
+  const nextEncryptedPayload = await encryptPayload(unlockedSession.data, nextKey);
+  const nextSaltBase64 = bytesToBase64(nextSalt);
+
+  await chrome.storage.local.set({
+    [VAULT_STORAGE_KEY]: {
+      version: VAULT_VERSION,
+      salt: nextSaltBase64,
+      encrypted: nextEncryptedPayload
+    }
+  });
+
+  return {
+    key: nextKey,
+    salt: nextSaltBase64,
+    data: unlockedSession.data
+  };
+}
