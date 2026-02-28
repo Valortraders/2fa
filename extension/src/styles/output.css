@@ -704,6 +704,10 @@ body {
   width: 100%;
 }
 
+.min-w-0 {
+  min-width: 0px;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -740,6 +744,10 @@ body {
   align-items: center;
 }
 
+.items-stretch {
+  align-items: stretch;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -754,6 +762,10 @@ body {
 
 .gap-2 {
   gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
 }
 
 .space-y-2 > :not([hidden]) ~ :not([hidden]) {
@@ -1050,6 +1062,10 @@ body {
 
 .file\:text-foreground::file-selector-button {
   color: hsl(var(--foreground));
+}
+
+.hover\:border-destructive\/50:hover {
+  border-color: hsl(var(--destructive) / 0.5);
 }
 
 .hover\:bg-accent:hover {

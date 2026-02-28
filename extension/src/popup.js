@@ -233,17 +233,19 @@ function renderSavedAccounts() {
       return `
         <article class="relative rounded-md border ${isActive ? 'border-primary/60' : 'border-border'} bg-white/5 p-3 overflow-hidden">
           <div class="absolute left-0 bottom-0 h-0.5 bg-primary/60" style="width:${progress}%"></div>
-          <div class="flex items-start justify-between gap-2">
-            <div>
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
               <p class="text-sm font-medium leading-tight">${escapeHtml(account.name)}</p>
               <p class="text-[11px] text-muted-foreground">${escapeHtml(meta)}</p>
+              <p class="text-2xl font-mono font-semibold tracking-[0.2em] mt-2">${escapeHtml(generatedCode)}</p>
             </div>
-            <button type="button" data-action="delete" data-account-id="${escapeHtml(account.id)}" class="text-[11px] text-muted-foreground hover:text-destructive">Delete</button>
-          </div>
-          <p class="text-2xl font-mono font-semibold tracking-[0.2em] mt-2">${escapeHtml(generatedCode)}</p>
-          <div class="mt-2 flex items-center gap-2">
-            <button type="button" data-action="use" data-account-id="${escapeHtml(account.id)}" class="px-2 py-1 text-[11px] rounded-md border border-border hover:bg-accent">Use</button>
-            <button type="button" data-action="copy" data-account-id="${escapeHtml(account.id)}" class="px-2 py-1 text-[11px] rounded-md border border-border hover:bg-accent">Copy</button>
+            <div class="flex flex-col items-stretch gap-1">
+              <button type="button" data-action="delete" data-account-id="${escapeHtml(account.id)}" class="px-2 py-1 text-[11px] rounded-md border border-border text-muted-foreground hover:text-destructive hover:border-destructive/50">Delete</button>
+              <div class="grid grid-cols-2 gap-1">
+                <button type="button" data-action="use" data-account-id="${escapeHtml(account.id)}" class="px-2 py-1 text-[11px] rounded-md border border-border hover:bg-accent">Use</button>
+                <button type="button" data-action="copy" data-account-id="${escapeHtml(account.id)}" class="px-2 py-1 text-[11px] rounded-md border border-border hover:bg-accent">Copy</button>
+              </div>
+            </div>
           </div>
         </article>
       `;
