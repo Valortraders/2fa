@@ -228,6 +228,73 @@ function parseGenerateForm() {
   return { config, accountName };
 }
 
+function getSavedAccountMetrics(account) {
+  let generatedCode = '------';
+  let refreshLabel = 'Invalid account configuration';
+  let progress = 100;
+
+  try {
+    generatedCode = formatOtpCode(generateOTP(account.config));
+    if (account.config.type === 'hotp') {
+      refreshLabel = `HOTP • Counter ${account.config.counter}`;
+      progress = 100;
+    } else {
+      const period = account.config.period || 30;
+      const timeLeft = getTotpTimeLeft(period);
+      refreshLabel = `Refreshes in ${Math.ceil(timeLeft)}s`;
+      progress = (timeLeft / period) * 100;
+    }
+  } catch {}
+
+  return {
+    generatedCode,
+    refreshLabel,
+    progress
+  };
+}
+
+function updateSavedCardNode(account, cardElement) {
+  const { generatedCode, refreshLabel, progress } = getSavedAccountMetrics(account);
+  const refreshNode = cardElement.querySelector('[data-role="refresh"]');
+  const codeNode = cardElement.querySelector('[data-role="code"]');
+  const progressNode = cardElement.querySelector('[data-role="progress"]');
+  const copyLabelNode = cardElement.querySelector('[data-copy-label]');
+
+  if (refreshNode) {
+    refreshNode.textContent = refreshLabel;
+  }
+  if (codeNode) {
+    codeNode.textContent = generatedCode;
+  }
+  if (progressNode) {
+    progressNode.style.width = `${progress}%`;
+  }
+
+  if (copyLabelNode) {
+    const isCopyConfirmed =
+      state.copiedAccountId === account.id &&
+      state.copiedUntilMs > Date.now();
+    copyLabelNode.textContent = isCopyConfirmed ? 'Copied' : 'Copy';
+  }
+}
+
+function updateSavedCardsRealtime() {
+  if (!elements.savedList || state.currentView !== 'saved') {
+    return;
+  }
+
+  const accountsById = new Map(getAccounts().map((account) => [account.id, account]));
+  const cardNodes = elements.savedList.querySelectorAll('[data-account-id]');
+  cardNodes.forEach((cardNode) => {
+    const accountId = cardNode.dataset.accountId;
+    const account = accountsById.get(accountId);
+    if (!account) {
+      return;
+    }
+    updateSavedCardNode(account, cardNode);
+  });
+}
+
 function renderSavedAccounts() {
   const accounts = getAccounts();
   setVisibility(elements.savedEmpty, accounts.length === 0);
@@ -238,24 +305,7 @@ function renderSavedAccounts() {
 
   const html = accounts
     .map((account) => {
-      let generatedCode = '------';
-      let meta = 'Invalid account configuration';
-      let progress = 100;
-      let refreshLabel = '';
-
-      try {
-        generatedCode = formatOtpCode(generateOTP(account.config));
-        if (account.config.type === 'hotp') {
-          meta = `HOTP • Counter ${account.config.counter}`;
-          refreshLabel = meta;
-        } else {
-          const period = account.config.period || 30;
-          const timeLeft = getTotpTimeLeft(period);
-          meta = `Refreshes in ${Math.ceil(timeLeft)}s`;
-          refreshLabel = meta;
-          progress = (timeLeft / period) * 100;
-        }
-      } catch {}
+      const { generatedCode, refreshLabel, progress } = getSavedAccountMetrics(account);
 
       const isActive = account.id === state.activeAccountId;
       const isPendingDelete = state.pendingDeleteAccountId === account.id;
@@ -279,14 +329,14 @@ function renderSavedAccounts() {
         `;
       const copyLabel = isCopyConfirmed ? 'Copied' : 'Copy';
       return `
-        <article class="relative rounded-md border ${isActive ? 'border-primary/60' : 'border-border'} bg-white/5 p-3 overflow-hidden">
-          <div class="absolute left-0 bottom-0 h-0.5 bg-primary/60" style="width:${progress}%"></div>
+        <article data-account-id="${escapeHtml(account.id)}" class="relative rounded-md border ${isActive ? 'border-primary/60' : 'border-border'} bg-white/5 p-3 overflow-hidden">
+          <div data-role="progress" class="absolute left-0 bottom-0 h-0.5 bg-primary/60" style="width:${progress}%"></div>
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
               <p class="text-sm font-medium leading-tight">${escapeHtml(account.name)}</p>
-              <p class="text-[11px] text-muted-foreground">${escapeHtml(refreshLabel || meta)}</p>
+              <p data-role="refresh" class="text-[11px] text-muted-foreground">${escapeHtml(refreshLabel)}</p>
             </div>
-            <p class="text-2xl font-mono font-semibold tracking-[0.2em] leading-none whitespace-nowrap">${escapeHtml(generatedCode)}</p>
+            <p data-role="code" class="text-2xl font-mono font-semibold tracking-[0.2em] leading-none whitespace-nowrap">${escapeHtml(generatedCode)}</p>
           </div>
           <div class="mt-2 flex items-center gap-1">
             <button type="button" data-action="copy" data-account-id="${escapeHtml(account.id)}" class="flex-1 h-8 px-2 text-[11px] rounded-md border border-border hover:bg-accent inline-flex items-center justify-center gap-1">
@@ -332,6 +382,7 @@ function setView(view) {
 
   if (view === 'saved') {
     renderSavedAccounts();
+    updateSavedCardsRealtime();
   }
 }
 
@@ -446,6 +497,7 @@ async function handleSavedListAction(event) {
   if (action === 'delete-arm') {
     state.pendingDeleteAccountId = account.id;
     renderSavedAccounts();
+    updateSavedCardsRealtime();
     return;
   }
 
@@ -461,6 +513,7 @@ async function handleSavedListAction(event) {
     state.pendingDeleteAccountId = null;
     await persistVaultSession();
     renderSavedAccounts();
+    updateSavedCardsRealtime();
     setAppStatus('Account deleted.');
     return;
   }
@@ -476,12 +529,16 @@ async function handleSavedListAction(event) {
   }
 
   if (action === 'copy') {
+    const hadPendingDelete = Boolean(state.pendingDeleteAccountId);
     state.pendingDeleteAccountId = null;
     try {
       await copyCodeToClipboard(account.config, account.id);
       state.copiedAccountId = account.id;
       state.copiedUntilMs = Date.now() + 1000;
-      renderSavedAccounts();
+      if (hadPendingDelete) {
+        renderSavedAccounts();
+      }
+      updateSavedCardsRealtime();
       if (state.activeAccountId === account.id) {
         state.activeConfig = { ...account.config };
         renderActiveCodeCard();
@@ -791,7 +848,7 @@ function startTicker() {
       renderActiveCodeCard();
     }
     if (state.currentView === 'saved') {
-      renderSavedAccounts();
+      updateSavedCardsRealtime();
     }
   }, 120);
 }
@@ -815,6 +872,7 @@ async function openUnlockedApp(session) {
   setVisibility(elements.lockButton, true);
   setView('saved');
   renderSavedAccounts();
+  updateSavedCardsRealtime();
   renderActiveCodeCard();
   startTicker();
 }
