@@ -1,7 +1,7 @@
 import { generateOTP, parseAuthInput } from './totp.js';
 import { createVault, hasVault, persistVault, unlockVault } from './vault.js';
 
-const APP_VIEWS = ['generate', 'saved', 'scan'];
+const APP_VIEWS = ['generate', 'saved', 'scan', 'settings'];
 const THEME_STORAGE_KEY = 'theme';
 const VAULT_STORAGE_KEY = 'secureVaultV1';
 
@@ -592,7 +592,7 @@ async function handleExportBackup() {
     const dateStamp = new Date().toISOString().slice(0, 10);
     const content = JSON.stringify(backupPayload, null, 2);
     downloadBackupFile(`valor2fa-backup-${dateStamp}.v2fa`, content);
-    setAppStatus('Encrypted backup exported.');
+    setAppStatus('Encrypted backup exported. Open the .v2fa file in a text editor to view JSON structure.');
   } catch (error) {
     setAppStatus(error?.message || 'Failed to export backup.', true);
   }
@@ -812,7 +812,8 @@ function wireDomReferences() {
   elements.viewPanels = {
     generate: byId('view-generate'),
     saved: byId('view-saved'),
-    scan: byId('view-scan')
+    scan: byId('view-scan'),
+    settings: byId('view-settings')
   };
   elements.viewButtons = Array.from(document.querySelectorAll('.view-button'));
 
