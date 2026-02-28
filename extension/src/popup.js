@@ -11,7 +11,8 @@ const state = {
   activeConfig: null,
   activeAccountName: '',
   activeAccountId: null,
-  vaultSession: null
+  vaultSession: null,
+  pendingDeleteAccountId: null
 };
 
 const elements = {};
@@ -81,9 +82,10 @@ function formatOtpCode(code) {
 }
 
 function getTotpTimeLeft(period = 30) {
-  const now = Math.floor(Date.now() / 1000);
-  const slot = Math.floor(now / period);
-  return (slot + 1) * period - now;
+  const nowMs = Date.now();
+  const periodMs = period * 1000;
+  const elapsedInPeriod = nowMs % periodMs;
+  return (periodMs - elapsedInPeriod) / 1000;
 }
 
 function getAccounts() {
@@ -148,7 +150,7 @@ function renderActiveCodeCard() {
     } else {
       const period = config.period || 30;
       const timeLeft = getTotpTimeLeft(period);
-      elements.activeTimeLeft.textContent = `Refreshes in ${timeLeft}s`;
+      elements.activeTimeLeft.textContent = `Refreshes in ${Math.ceil(timeLeft)}s`;
       elements.activeProgress.style.width = `${(timeLeft / period) * 100}%`;
     }
 
@@ -216,36 +218,65 @@ function renderSavedAccounts() {
       let generatedCode = '------';
       let meta = 'Invalid account configuration';
       let progress = 100;
+      let refreshLabel = '';
 
       try {
         generatedCode = formatOtpCode(generateOTP(account.config));
         if (account.config.type === 'hotp') {
           meta = `HOTP • Counter ${account.config.counter}`;
+          refreshLabel = meta;
         } else {
           const period = account.config.period || 30;
           const timeLeft = getTotpTimeLeft(period);
-          meta = `Refreshes in ${timeLeft}s`;
+          meta = `Refreshes in ${Math.ceil(timeLeft)}s`;
+          refreshLabel = meta;
           progress = (timeLeft / period) * 100;
         }
       } catch {}
 
       const isActive = account.id === state.activeAccountId;
+      const isPendingDelete = state.pendingDeleteAccountId === account.id;
+      const deleteAction = isPendingDelete ? 'delete-confirm' : 'delete-arm';
+      const deleteButtonClass = isPendingDelete
+        ? 'h-8 w-8 rounded-md border border-emerald-500/60 text-emerald-400 hover:bg-emerald-500/10 inline-flex items-center justify-center'
+        : 'h-8 w-8 rounded-md border border-border text-muted-foreground hover:text-destructive hover:border-destructive/50 inline-flex items-center justify-center';
+      const deleteIcon = isPendingDelete
+        ? `
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        `
+        : `
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8"/>
+          </svg>
+        `;
       return `
         <article class="relative rounded-md border ${isActive ? 'border-primary/60' : 'border-border'} bg-white/5 p-3 overflow-hidden">
           <div class="absolute left-0 bottom-0 h-0.5 bg-primary/60" style="width:${progress}%"></div>
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0 flex-1">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
               <p class="text-sm font-medium leading-tight">${escapeHtml(account.name)}</p>
-              <p class="text-[11px] text-muted-foreground">${escapeHtml(meta)}</p>
-              <p class="text-2xl font-mono font-semibold tracking-[0.2em] mt-2">${escapeHtml(generatedCode)}</p>
+              <p class="text-[11px] text-muted-foreground">${escapeHtml(refreshLabel || meta)}</p>
             </div>
-            <div class="flex flex-col items-stretch gap-1">
-              <button type="button" data-action="delete" data-account-id="${escapeHtml(account.id)}" class="px-2 py-1 text-[11px] rounded-md border border-border text-muted-foreground hover:text-destructive hover:border-destructive/50">Delete</button>
-              <div class="grid grid-cols-2 gap-1">
-                <button type="button" data-action="use" data-account-id="${escapeHtml(account.id)}" class="px-2 py-1 text-[11px] rounded-md border border-border hover:bg-accent">Use</button>
-                <button type="button" data-action="copy" data-account-id="${escapeHtml(account.id)}" class="px-2 py-1 text-[11px] rounded-md border border-border hover:bg-accent">Copy</button>
-              </div>
-            </div>
+            <p class="text-2xl font-mono font-semibold tracking-[0.2em] leading-none whitespace-nowrap">${escapeHtml(generatedCode)}</p>
+          </div>
+          <div class="mt-2 flex items-center gap-1">
+            <button type="button" data-action="copy" data-account-id="${escapeHtml(account.id)}" class="flex-1 h-8 px-2 text-[11px] rounded-md border border-border hover:bg-accent inline-flex items-center justify-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H7a2 2 0 01-2-2V7a2 2 0 012-2h7a2 2 0 012 2v1m-5 10h6a2 2 0 002-2v-6a2 2 0 00-2-2h-6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+              </svg>
+              <span data-copy-label>Copy</span>
+            </button>
+            <button type="button" data-action="use" data-account-id="${escapeHtml(account.id)}" aria-label="Use account" class="h-8 w-8 rounded-md border border-border hover:bg-accent inline-flex items-center justify-center">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+            <button type="button" data-action="${deleteAction}" data-account-id="${escapeHtml(account.id)}" aria-label="${isPendingDelete ? 'Confirm delete account' : 'Delete account'}" class="${deleteButtonClass}">
+              ${deleteIcon}
+            </button>
           </div>
         </article>
       `;
@@ -385,11 +416,18 @@ async function handleSavedListAction(event) {
     return;
   }
 
-  if (action === 'delete') {
+  if (action === 'delete-arm') {
+    state.pendingDeleteAccountId = account.id;
+    renderSavedAccounts();
+    return;
+  }
+
+  if (action === 'delete-confirm') {
     state.vaultSession.data.accounts = getAccounts().filter((item) => item.id !== account.id);
     if (state.activeAccountId === account.id) {
       clearActiveCode();
     }
+    state.pendingDeleteAccountId = null;
     await persistVaultSession();
     renderSavedAccounts();
     setAppStatus('Account deleted.');
@@ -397,6 +435,7 @@ async function handleSavedListAction(event) {
   }
 
   if (action === 'use') {
+    state.pendingDeleteAccountId = null;
     state.activeConfig = { ...account.config };
     state.activeAccountName = account.name;
     state.activeAccountId = account.id;
@@ -406,9 +445,15 @@ async function handleSavedListAction(event) {
   }
 
   if (action === 'copy') {
-    const originalLabel = actionButton.textContent;
+    state.pendingDeleteAccountId = null;
+    const copyLabel = actionButton.querySelector('[data-copy-label]');
+    const originalLabel = copyLabel ? copyLabel.textContent : actionButton.textContent;
     try {
-      actionButton.textContent = 'Copied';
+      if (copyLabel) {
+        copyLabel.textContent = 'Copied';
+      } else {
+        actionButton.textContent = 'Copied';
+      }
       actionButton.disabled = true;
       await copyCodeToClipboard(account.config, account.id);
       if (state.activeAccountId === account.id) {
@@ -419,13 +464,21 @@ async function handleSavedListAction(event) {
         if (state.currentView === 'saved') {
           renderSavedAccounts();
         } else {
-          actionButton.textContent = originalLabel;
+          if (copyLabel) {
+            copyLabel.textContent = originalLabel;
+          } else {
+            actionButton.textContent = originalLabel;
+          }
           actionButton.disabled = false;
         }
       }, 1000);
       setAppStatus('Code copied.');
     } catch (error) {
-      actionButton.textContent = originalLabel;
+      if (copyLabel) {
+        copyLabel.textContent = originalLabel;
+      } else {
+        actionButton.textContent = originalLabel;
+      }
       actionButton.disabled = false;
       setAppStatus(error?.message || 'Failed to copy code.', true);
     }
@@ -659,6 +712,7 @@ async function toggleTheme() {
 function lockVault() {
   stopTicker();
   state.vaultSession = null;
+  state.pendingDeleteAccountId = null;
   clearActiveCode();
   elements.unlockPassphrase.value = '';
   setUnlockMessage('');
@@ -687,7 +741,7 @@ function startTicker() {
     if (state.currentView === 'saved') {
       renderSavedAccounts();
     }
-  }, 1000);
+  }, 120);
 }
 
 function stopTicker() {
