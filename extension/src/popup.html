@@ -8,13 +8,18 @@
 </head>
 <body class="w-[400px] h-[560px] bg-background text-foreground overflow-hidden">
   <div class="h-full flex flex-col">
-    <header class="px-4 py-3 border-b border-border/80 bg-background/95 backdrop-blur-sm">
+    <header class="px-4 py-3 border-b border-border/80 bg-background">
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2">
           <img src="../icons/icon128.png" alt="Valor2FA" class="w-8 h-8 rounded-md">
           <div>
             <h1 class="text-base font-semibold leading-none">Valor2FA</h1>
-            <p class="text-[11px] text-muted-foreground mt-1">Encrypted local vault</p>
+            <a
+              href="https://2fa.valortraders.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[11px] text-muted-foreground mt-1 inline-block hover:underline"
+            >2fa.valortraders.com</a>
           </div>
         </div>
         <div class="flex items-center gap-1">
@@ -35,15 +40,15 @@
       </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto px-4 py-4 pb-24">
+    <main class="flex-1 overflow-y-auto px-4 pt-3 pb-24">
       <section id="vault-setup" class="hidden space-y-3">
         <h2 class="text-sm font-medium">Create local vault</h2>
         <p class="text-xs text-muted-foreground">
           Your 2FA secrets stay encrypted on this device only. Pick a vault passphrase to unlock saved accounts.
         </p>
         <form id="vault-setup-form" class="space-y-2">
-          <input id="setup-passphrase" type="password" autocomplete="new-password" placeholder="Passphrase (min 8 chars)" class="w-full h-10 px-3 rounded-md bg-white/5 border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-          <input id="setup-confirm-passphrase" type="password" autocomplete="new-password" placeholder="Confirm passphrase" class="w-full h-10 px-3 rounded-md bg-white/5 border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+          <input id="setup-passphrase" type="password" autocomplete="new-password" placeholder="Passphrase (min 8 chars)" class="w-full h-10 px-3 rounded-md bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+          <input id="setup-confirm-passphrase" type="password" autocomplete="new-password" placeholder="Confirm passphrase" class="w-full h-10 px-3 rounded-md bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
           <button type="submit" class="w-full h-10 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90">Create vault</button>
         </form>
         <p id="setup-error" class="hidden text-xs text-destructive"></p>
@@ -53,7 +58,7 @@
         <h2 class="text-sm font-medium">Unlock vault</h2>
         <p class="text-xs text-muted-foreground">Enter your passphrase to open locally encrypted accounts.</p>
         <form id="vault-unlock-form" class="space-y-2">
-          <input id="unlock-passphrase" type="password" autocomplete="current-password" placeholder="Vault passphrase" class="w-full h-10 px-3 rounded-md bg-white/5 border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+          <input id="unlock-passphrase" type="password" autocomplete="current-password" placeholder="Vault passphrase" class="w-full h-10 px-3 rounded-md bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
           <button type="submit" class="w-full h-10 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90">Unlock</button>
         </form>
         <p id="unlock-error" class="hidden text-xs text-destructive"></p>
@@ -65,11 +70,11 @@
         <section id="view-generate" class="space-y-3">
           <div class="space-y-2">
             <label for="auth-input" class="text-xs text-muted-foreground">Secret or `otpauth://` URI</label>
-            <input id="auth-input" type="text" placeholder="JBSWY3DPEHPK3PXP or otpauth://..." class="w-full h-11 px-3 rounded-md bg-white/5 border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            <input id="auth-input" type="text" placeholder="JBSWY3DPEHPK3PXP or otpauth://..." class="w-full h-11 px-3 rounded-md bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
           </div>
           <div class="space-y-2">
             <label for="account-name-input" class="text-xs text-muted-foreground">Account label</label>
-            <input id="account-name-input" type="text" placeholder="GitHub - orgest" class="w-full h-11 px-3 rounded-md bg-white/5 border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            <input id="account-name-input" type="text" placeholder="GitHub - orgest" class="w-full h-11 px-3 rounded-md bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
           </div>
 
           <div class="grid grid-cols-2 gap-2">
@@ -79,7 +84,7 @@
 
           <p id="generate-error" class="hidden text-xs text-destructive"></p>
 
-          <div id="active-code-card" class="hidden p-4 rounded-lg bg-white/5 border border-border relative overflow-hidden">
+          <div id="active-code-card" class="hidden p-4 rounded-lg bg-card border border-border relative overflow-hidden">
             <div id="active-progress" class="absolute left-0 bottom-0 h-0.5 bg-primary/60 transition-[width] duration-500" style="width: 100%"></div>
             <p id="active-account-meta" class="text-xs text-muted-foreground mb-2"></p>
             <p id="active-code" class="text-3xl font-mono font-bold tracking-[0.24em] text-center"></p>
@@ -108,17 +113,17 @@
           </button>
           <p id="scan-status" class="text-xs text-muted-foreground"></p>
 
-          <div class="space-y-2 border border-border rounded-md p-3 bg-white/5">
+          <div class="space-y-2 border border-border rounded-md p-3 bg-card">
             <p class="text-xs text-muted-foreground">
               OCR fallback: paste text from screenshot if QR detection fails.
             </p>
-            <textarea id="scan-fallback-input" rows="3" placeholder="Paste OCR text, secret, or otpauth URI..." class="w-full rounded-md bg-transparent border border-border px-3 py-2 text-xs focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
+            <textarea id="scan-fallback-input" rows="3" placeholder="Paste OCR text, secret, or otpauth URI..." class="w-full rounded-md bg-card border border-border px-3 py-2 text-xs focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
             <button id="scan-fallback-button" type="button" class="w-full h-9 rounded-md border border-border text-xs font-medium hover:bg-accent">Use text input</button>
           </div>
         </section>
 
         <section id="view-settings" class="hidden space-y-3">
-          <div class="space-y-2 rounded-md border border-border bg-white/5 p-3">
+          <div class="space-y-2 rounded-md border border-border bg-card p-3">
             <h3 class="text-sm font-medium">Backups</h3>
             <p class="text-xs text-muted-foreground">
               Exported backups are JSON files containing encrypted vault data only.
@@ -139,15 +144,15 @@
             </p>
           </div>
 
-          <div class="space-y-2 rounded-md border border-border bg-white/5 p-3">
+          <div class="space-y-2 rounded-md border border-border bg-card p-3">
             <h3 class="text-sm font-medium">Change Vault Password</h3>
             <p class="text-xs text-muted-foreground">
               Update the vault passphrase used to decrypt your local encrypted accounts.
             </p>
             <form id="change-passphrase-form" class="space-y-2">
-              <input id="current-passphrase-input" type="password" autocomplete="current-password" placeholder="Current passphrase" class="w-full h-10 px-3 rounded-md bg-transparent border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-              <input id="new-passphrase-input" type="password" autocomplete="new-password" placeholder="New passphrase (min 8 chars)" class="w-full h-10 px-3 rounded-md bg-transparent border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-              <input id="confirm-new-passphrase-input" type="password" autocomplete="new-password" placeholder="Confirm new passphrase" class="w-full h-10 px-3 rounded-md bg-transparent border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+              <input id="current-passphrase-input" type="password" autocomplete="current-password" placeholder="Current passphrase" class="w-full h-10 px-3 rounded-md bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+              <input id="new-passphrase-input" type="password" autocomplete="new-password" placeholder="New passphrase (min 8 chars)" class="w-full h-10 px-3 rounded-md bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+              <input id="confirm-new-passphrase-input" type="password" autocomplete="new-password" placeholder="Confirm new passphrase" class="w-full h-10 px-3 rounded-md bg-card border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none">
               <button type="submit" class="w-full h-10 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">
                 Change password
               </button>
@@ -158,7 +163,7 @@
       </section>
     </main>
 
-    <nav id="bottom-nav" class="hidden border-t border-border/80 bg-background/95 backdrop-blur-sm p-2">
+    <nav id="bottom-nav" class="hidden border-t border-border/80 bg-background p-2">
       <div class="grid grid-cols-4 gap-2">
         <button type="button" data-view="generate" class="view-button h-9 rounded-md text-[11px] font-medium bg-primary/15 text-primary">Generate</button>
         <button type="button" data-view="saved" class="view-button h-9 rounded-md text-[11px] font-medium text-muted-foreground hover:bg-accent">Saved</button>

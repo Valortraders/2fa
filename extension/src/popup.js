@@ -117,7 +117,7 @@ function setAppStatus(message, isError = false) {
   elements.appStatus.textContent = message;
   elements.appStatus.className = isError
     ? 'text-xs rounded-md px-3 py-2 border border-destructive/40 text-destructive bg-destructive/10'
-    : 'text-xs rounded-md px-3 py-2 border border-border text-muted-foreground bg-white/5';
+    : 'text-xs rounded-md px-3 py-2 border border-border text-muted-foreground bg-card';
   setVisibility(elements.appStatus, Boolean(message));
   if (message) {
     appStatusTimer = setTimeout(() => {
@@ -329,7 +329,7 @@ function renderSavedAccounts() {
         `;
       const copyLabel = isCopyConfirmed ? 'Copied' : 'Copy';
       return `
-        <article data-account-id="${escapeHtml(account.id)}" class="relative rounded-md border ${isActive ? 'border-primary/60' : 'border-border'} bg-white/5 p-3 overflow-hidden">
+        <article data-account-id="${escapeHtml(account.id)}" class="relative rounded-md border ${isActive ? 'border-primary/60' : 'border-border'} bg-card p-3 overflow-hidden">
           <div data-role="progress" class="absolute left-0 bottom-0 h-0.5 bg-primary/60" style="width:${progress}%"></div>
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
@@ -543,7 +543,6 @@ async function handleSavedListAction(event) {
         state.activeConfig = { ...account.config };
         renderActiveCodeCard();
       }
-      setAppStatus('Code copied.');
     } catch (error) {
       setAppStatus(error?.message || 'Failed to copy code.', true);
     }

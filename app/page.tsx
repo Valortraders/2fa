@@ -4,11 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { generateTOTP } from '../lib/auth/totp';
-import { Copy, Check, AlertCircle, KeyRound, Info } from 'lucide-react';
+import { Copy, Check, AlertCircle, ShieldCheck, Info, Chrome, ArrowUpRight } from 'lucide-react';
 import { authenticator } from 'otplib';
 import { AdCard } from '../components/ad-card';
 import { AppError, ErrorCodes } from '../lib/error-handler';
 import Script from 'next/script';
+
+const CHROME_WEBSTORE_URL = 'https://chromewebstore.google.com/detail/2fa/ebhcbenbgjmaebpgbldimndmfomjmphd';
 
 export default function HomePage() {
   const [secret, setSecret] = useState('');
@@ -157,18 +159,27 @@ export default function HomePage() {
       <div className="w-full max-w-md mx-auto px-4">
         <div className="space-y-6">
           <div className="space-y-2 text-center">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-white/5 mx-auto">
-              <KeyRound className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl border border-gray-200/70 bg-white shadow-sm dark:border-white/15 dark:bg-white/5 dark:shadow-none mx-auto">
+              <ShieldCheck className="w-7 h-7 text-gray-800 dark:text-white" />
             </div>
             <h1 className="text-2xl font-medium">2FA Code Generator</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your 2FA secret key to generate authentication codes
+              Generate secure TOTP codes instantly and install the Chrome extension for one-click access.
             </p>
+            <div className="pt-2 flex justify-center">
+              <Button asChild size="sm" className="gap-2">
+                <a href={CHROME_WEBSTORE_URL} target="_blank" rel="noopener noreferrer" aria-label="Download Valor2FA extension on Chrome Web Store">
+                  <Chrome className="h-4 w-4" />
+                  Download Extension
+                  <ArrowUpRight className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-4">
             {/* Input Container */}
-            <div className="p-6 rounded-lg border border-gray-200/20 dark:border-gray-800/20 bg-purple-50/30 dark:bg-purple-900/10 backdrop-blur-md backdrop-saturate-150 shadow-lg">
+            <div className="p-6 rounded-lg border border-gray-200/40 dark:border-white/10 bg-white/75 dark:bg-black/50 backdrop-blur-md backdrop-saturate-150 shadow-lg">
               <div className="space-y-3">
                 <div className="flex flex-col gap-2">
                   <Input
@@ -177,7 +188,7 @@ export default function HomePage() {
                     onChange={handleSecretChange}
                     className={`h-12 bg-white/50 dark:bg-white/5 border-0 text-center text-lg font-mono 
                       placeholder:text-gray-400 dark:placeholder:text-gray-500 
-                      focus:ring-2 focus:ring-purple-200/50 dark:focus:ring-purple-800/20
+                      focus:ring-2 focus:ring-gray-300/60 dark:focus:ring-white/20
                       ${error ? 'ring-1 ring-red-500' : ''}`}
                     aria-label="Secret key input"
                   />
@@ -201,7 +212,7 @@ export default function HomePage() {
                   <div className="p-8 rounded-lg bg-white/50 dark:bg-white/5 relative overflow-hidden">
                     {/* Progress bar */}
                     <div 
-                      className="absolute bottom-0 left-0 h-0.5 bg-purple-500/50 dark:bg-purple-400/50 transition-all duration-1000"
+                      className="absolute bottom-0 left-0 h-0.5 bg-gray-700/70 dark:bg-white/70 transition-all duration-1000"
                       style={{ width: `${(timeLeft / 30) * 100}%` }}
                       aria-hidden="true"
                     />

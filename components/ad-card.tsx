@@ -19,7 +19,7 @@ const products = [
     name: 'ValorAlgo',
     description: 'Advanced algorithmic trading platform',
     link: 'https://valoralgo.com',
-    gradient: 'from-purple-500/20 to-blue-500/20'
+    gradient: 'from-gray-500/20 to-blue-500/20'
   },
   {
     name: 'Valortraders',

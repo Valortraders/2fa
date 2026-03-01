@@ -6,7 +6,7 @@ import { ValorLogo } from '../components/ui/valor-logo'
 import { ThemeToggle } from '../components/ui/theme-toggle'
 import { Footer } from '../components/ui/footer'
 import { Toaster } from '../components/ui/toaster'
-import Galaxy from '../components/galaxy/Galaxy'
+import ColorBends from '../components/color-bends/ColorBends'
 import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
 
@@ -124,11 +124,26 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <div className="min-h-screen flex flex-col bg-gradient-to-b from-white via-white to-blue-50 dark:from-[#0A0B0D] dark:via-[#0A0B0D] dark:to-blue-950/20 text-gray-900 dark:text-white transition-colors">
-            <Galaxy />
+          <div className="min-h-screen flex flex-col bg-white dark:bg-black text-gray-900 dark:text-white transition-colors">
+            <div className="pointer-events-none fixed inset-0 z-0 opacity-70">
+              <ColorBends
+                colors={['#ff5c7a', '#8a5cff', '#00ffd1']}
+                rotation={0}
+                speed={0.2}
+                scale={1}
+                frequency={1}
+                warpStrength={1}
+                mouseInfluence={1}
+                parallax={0.5}
+                noise={0.1}
+                transparent
+                autoRotate={0}
+                color=""
+              />
+            </div>
             
             {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0A0B0D]/80 backdrop-blur-sm border-b border-gray-200/20 dark:border-gray-800/20">
+            <header className="fixed top-0 left-0 right-0 z-50 bg-white/85 dark:bg-black/85 backdrop-blur-sm border-b border-gray-200/20 dark:border-white/10">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                   <ValorLogo />
