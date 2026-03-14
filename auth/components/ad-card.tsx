@@ -28,9 +28,9 @@ const products = [
     gradient: 'from-blue-500/20 to-cyan-500/20'
   },
   {
-    name: 'Valortraders Store',
-    description: 'Traders Gear & Merch',
-    link: 'https://valortraders.store',
+    name: 'ValorGPT',
+    description: 'Expert Trading Analysis AI',
+    link: 'https://valorgpt.com',
     gradient: 'from-emerald-500/20 to-green-500/20'
   }
 ];

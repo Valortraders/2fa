@@ -10,7 +10,7 @@ import { AdCard } from '../components/ad-card';
 import { AppError, ErrorCodes } from '../lib/error-handler';
 import Script from 'next/script';
 
-const CHROME_WEBSTORE_URL = 'https://chromewebstore.google.com/detail/2fa/ebhcbenbgjmaebpgbldimndmfomjmphd';
+const CHROME_WEBSTORE_URL = '#';
 
 export default function HomePage() {
   const [secret, setSecret] = useState('');
