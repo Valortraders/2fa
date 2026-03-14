@@ -23,13 +23,13 @@ const products = [
   },
   {
     name: 'Valortraders',
-    description: 'Professional trading terminal',
+    description: 'The most elite trading community',
     link: 'https://valortraders.com',
     gradient: 'from-blue-500/20 to-cyan-500/20'
   },
   {
     name: 'ValorGPT',
-    description: 'Expert Trading Analysis AI',
+    description: 'Unfiltered Intelligence',
     link: 'https://valorgpt.com',
     gradient: 'from-emerald-500/20 to-green-500/20'
   }
@@ -107,7 +107,7 @@ export function AdCard() {
         >
           <div className="relative overflow-hidden rounded-xl border border-blue-200/20 bg-gradient-to-br from-blue-50/80 to-indigo-50/80 p-6 shadow-lg transition-all duration-500 hover:scale-[1.02] hover:shadow-xl dark:from-blue-950/30 dark:to-indigo-950/30 backdrop-blur-md">
             {/* Hide button */}
-            <div 
+            <div
               data-hide-button
               onClick={handleHide}
               className="absolute top-2 right-2 p-1 rounded-md opacity-0 group-hover:opacity-100 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 transition-all duration-200 cursor-pointer"
@@ -122,7 +122,7 @@ export function AdCard() {
             {/* Animated glow effects */}
             <div className="absolute -right-8 -top-8 h-32 w-32 rotate-12 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 blur-2xl animate-float backdrop-blur-sm" />
             <div className="absolute -bottom-8 -left-8 h-32 w-32 -rotate-12 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 blur-2xl animate-float backdrop-blur-sm delay-1000" style={{ animationDelay: '-4s' }} />
-            
+
             {/* Interactive hover glow */}
             <div className={`absolute inset-0 bg-gradient-to-r from-blue-500/0 via-indigo-500/10 to-blue-500/0 transition-opacity duration-700 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
 
@@ -153,10 +153,10 @@ export function AdCard() {
                   'Real-time Market Analysis',
                   'Professional Trading Tools'
                 ].map((feature, index) => (
-                  <li 
+                  <li
                     key={feature}
                     className="flex items-center gap-2 text-gray-600 transition-all duration-300 dark:text-gray-300"
-                    style={{ 
+                    style={{
                       transform: isHovered ? 'translateX(8px)' : 'translateX(0)',
                       transitionDelay: `${index * 50}ms`
                     }}
@@ -207,7 +207,7 @@ export function AdCard() {
               >
                 {/* Glassmorphism overlay */}
                 <div className="absolute inset-0 bg-white/5 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
+
                 {/* Content */}
                 <div className="relative">
                   <h3 className="font-semibold text-foreground/90 mb-1 text-lg">{product.name}</h3>
@@ -219,7 +219,7 @@ export function AdCard() {
 
           <DrawerFooter>
             <DrawerClose asChild>
-              <button 
+              <button
                 type="button"
                 className="w-full px-4 py-2 rounded-lg bg-gray-100/80 hover:bg-gray-200/80 dark:bg-gray-800/80 dark:hover:bg-gray-700/80 backdrop-blur-sm transition-colors duration-200"
               >
