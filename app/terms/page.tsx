@@ -75,7 +75,7 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold">3. Intellectual Property</h2>
             <p>
-              The Valortraders 2FA service, including its code, design, and branding, is owned by Valortraders.
+              The Valortraders 2FA service, including its code, design and branding, is owned by Valortraders.
               The service is open-source under the MIT license, which allows for modification and redistribution
               under certain conditions.
             </p>

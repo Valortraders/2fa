@@ -22,7 +22,9 @@ export const metadata: Metadata = {
     '2FA', 'two-factor authentication', 'security', 'authentication', 'TOTP', 
     'Valortraders', 'crypto security', 'trading security', 'authenticator app',
     'secure login', 'account protection', 'time-based one-time password',
-    'online security', 'privacy', 'open source 2FA'
+    'online security', 'privacy', 'open source 2FA', 'free 2FA generator',
+    'secure authenticator', 'TOTP generator', 'multi-factor authentication',
+    'OTP generator', 'security tool', 'password security'
   ],
   authors: [{ name: 'Valortraders', url: 'https://valortraders.com' }],
   creator: 'Valortraders',
@@ -53,6 +55,13 @@ export const metadata: Metadata = {
         height: 630,
         alt: 'Valortraders 2FA - Secure Authentication Tool Preview',
         type: 'image/png',
+      },
+      {
+        url: '/og-image-square.png',
+        width: 1200,
+        height: 1200,
+        alt: 'Valortraders 2FA - Square Logo',
+        type: 'image/png',
       }
     ]
   },
@@ -81,10 +90,15 @@ export const metadata: Metadata = {
   },
   category: 'Security',
   applicationName: 'Valortraders 2FA',
+  classification: 'Security & Privacy',
   other: {
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'black-translucent',
     'apple-mobile-web-app-title': 'Valor 2FA',
+    'mobile-web-app-capable': 'yes',
+    'application-name': 'Valortraders 2FA',
+    'msapplication-TileColor': '#0A0B0D',
+    'theme-color': '#0A0B0D',
   }
 }
 
@@ -160,6 +174,8 @@ export default function RootLayout({
               name: 'Valortraders',
               url: 'https://valortraders.com',
               logo: 'https://2fa.valortraders.com/logo.png',
+              description: 'Professional trading platform and security tools provider',
+              foundingDate: '2023',
               sameAs: [
                 'https://twitter.com/valoralgo',
                 'https://facebook.com/valoralgo',
@@ -172,7 +188,29 @@ export default function RootLayout({
               contactPoint: {
                 '@type': 'ContactPoint',
                 email: 'contact@valortraders.com',
-                contactType: 'customer service'
+                contactType: 'customer service',
+                availableLanguage: 'English'
+              }
+            })
+          }}
+        />
+        
+        {/* Structured data for website */}
+        <Script
+          id="website-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Valortraders 2FA',
+              url: 'https://2fa.valortraders.com',
+              description: 'Free, secure two-factor authentication generator',
+              inLanguage: 'en-US',
+              isAccessibleForFree: true,
+              publisher: {
+                '@type': 'Organization',
+                name: 'Valortraders'
               }
             })
           }}
@@ -188,17 +226,80 @@ export default function RootLayout({
               '@type': 'SoftwareApplication',
               name: 'Valortraders 2FA',
               applicationCategory: 'SecurityApplication',
-              operatingSystem: 'Web',
+              applicationSubCategory: 'Two-Factor Authentication',
+              operatingSystem: 'Web Browser',
+              browserRequirements: 'Requires JavaScript. Requires HTML5.',
+              softwareVersion: '1.0.0',
+              releaseNotes: 'Initial release with TOTP support',
               offers: {
                 '@type': 'Offer',
                 price: '0',
-                priceCurrency: 'USD'
+                priceCurrency: 'USD',
+                availability: 'https://schema.org/InStock'
               },
               aggregateRating: {
                 '@type': 'AggregateRating',
                 ratingValue: '4.9',
-                ratingCount: '124'
-              }
+                ratingCount: '124',
+                bestRating: '5',
+                worstRating: '1'
+              },
+              featureList: [
+                'TOTP Code Generation',
+                'Secure Local Storage',
+                'Dark/Light Mode',
+                'Mobile Responsive',
+                'Open Source'
+              ],
+              screenshot: 'https://2fa.valortraders.com/og-image.png',
+              downloadUrl: 'https://2fa.valortraders.com',
+              installUrl: 'https://2fa.valortraders.com'
+            })
+          }}
+        />
+        
+        {/* FAQ Structured Data */}
+        <Script
+          id="faq-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: [
+                {
+                  '@type': 'Question',
+                  name: 'What is Valortraders 2FA?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Valortraders 2FA is a free, secure, and user-friendly two-factor authentication generator that creates TOTP codes for enhanced account security.'
+                  }
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Is Valortraders 2FA free to use?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Yes, Valortraders 2FA is completely free to use with no hidden costs or premium features.'
+                  }
+                },
+                {
+                  '@type': 'Question',
+                  name: 'How secure is this 2FA generator?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Very secure. All secrets are stored locally in your browser, never transmitted to our servers, and the app uses industry-standard TOTP algorithms.'
+                  }
+                },
+                {
+                  '@type': 'Question',
+                  name: 'Does it work offline?',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Yes, once loaded, the 2FA generator works completely offline as all computations happen in your browser.'
+                  }
+                }
+              ]
             })
           }}
         />
